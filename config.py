@@ -26,6 +26,21 @@ class Config(BaseModel):
     DASHBOARD_USERNAME: str = Field(default_factory=lambda: os.getenv("DASHBOARD_USERNAME", "admin"))
     DASHBOARD_PASSWORD: str = Field(default_factory=lambda: os.getenv("DASHBOARD_PASSWORD", "admin123"))
     
+    def __init__(self, **data):
+        super().__init__(**data)
+        # Security warning for default credentials
+        if self.DASHBOARD_USERNAME == "admin" and self.DASHBOARD_PASSWORD == "admin123":
+            print("\n" + "="*80)
+            print("⚠️  SECURITY WARNING: Using default dashboard credentials!")
+            print("   Username: admin | Password: admin123")
+            print("   ")
+            print("   SET CUSTOM CREDENTIALS IMMEDIATELY:")
+            print("   - Set DASHBOARD_USERNAME environment variable")
+            print("   - Set DASHBOARD_PASSWORD environment variable")
+            print("   ")
+            print("   Default credentials are NOT SECURE for production use!")
+            print("="*80 + "\n")
+    
     # Automated Scanning
     ENABLE_AUTO_SCAN: bool = Field(default_factory=lambda: os.getenv("ENABLE_AUTO_SCAN", "false").lower() == "true")
     SCAN_INTERVAL_MINUTES: int = Field(default_factory=lambda: int(os.getenv("SCAN_INTERVAL_MINUTES", "30")))

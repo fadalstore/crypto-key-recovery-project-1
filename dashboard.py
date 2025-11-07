@@ -17,6 +17,17 @@ router = APIRouter()
 security = HTTPBasic()
 templates = Jinja2Templates(directory="templates")
 
+# Security check on module load
+if config.DASHBOARD_USERNAME == "admin" and config.DASHBOARD_PASSWORD == "admin123":
+    import warnings
+    warnings.warn(
+        "Dashboard is using DEFAULT CREDENTIALS (admin/admin123). "
+        "This is a SECURITY RISK! Set DASHBOARD_USERNAME and DASHBOARD_PASSWORD "
+        "environment variables immediately.",
+        UserWarning,
+        stacklevel=2
+    )
+
 
 def verify_credentials(credentials: HTTPBasicCredentials = Depends(security)):
     """Verify dashboard authentication"""
