@@ -1,7 +1,7 @@
 language = "python"
 entrypoint = "main.py"
 run = "uvicorn main:app --host=0.0.0.0 --port=8000"
-modules = ["python-3.11"]
+modules = ["python-3.11", "web", "nix"]
 
 [agent]
 expertMode = true
@@ -37,3 +37,6 @@ externalPort = 80
 [[ports]]
 localPort = 39955
 externalPort = 3000
+
+[nix]
+channel = "stable-25_05"
