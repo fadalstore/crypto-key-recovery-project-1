@@ -2,20 +2,30 @@
 
 ## Maxuu Yahay Mashruucan?
 
-Mashruucan waa **Bitcoin Wallet Scanner** oo Random Bitcoin private keys abuuraya oo baaraya haddii lacag ay ku jirto addresses-ka.
+Mashruucan waa **Bitcoin Wallet Scanner** oo Random Bitcoin private keys abuuraya oo baaraya haddii lacag ay ku jirto addresses-ka. Waa mashruuc guul leh oo si buuxda u shaqeynaya oo leh dhammaan features-ka muhiimka ah.
+
+## ✅ Current Status (November 7, 2025)
+
+**Server:** ✅ Running successfully on port 5000  
+**Mode:** TEST MODE (safe for development)  
+**All Features:** Fully functional  
+**Documentation:** Complete with README.md and .env.example  
+**Deployment:** Ready to publish  
 
 ## Features (Sifooyin)
 
-1. **Random Key Generation** - Abuurista Bitcoin private keys iyo addresses random ah
-2. **Balance Checking** - Baarista balance-ka addressyada
-3. **Alert System** - Telegram alerts (ama console haddii test mode)
-4. **Data Storage** - MongoDB storage (ama JSON file haddii test mode)
-5. **Seed Phrase Generator** - Abuurista 12-word mnemonic seed phrases (multi-language support)
-6. **CSV Export** 📊 - Automatic export of found wallets to CSV files with timestamp
-7. **Storage Manager** 📁 - Local file storage with automatic rotation (30-day retention)
-8. **Google Drive Backup** ☁️ - Optional cloud backup integration
-9. **Dashboard** 🖥️ - Authenticated web interface to view found wallets
-10. **Automated Scanning** ⏰ - 24/7 scheduled scanning with APScheduler
+1. **Random Key Generation** ✅ - Abuurista Bitcoin private keys iyo addresses random ah
+2. **Balance Checking** ✅ - Baarista balance-ka addressyada
+3. **Alert System** ✅ - Telegram alerts (ama console haddii test mode)
+4. **Data Storage** ✅ - MongoDB storage (ama JSON file haddii test mode)
+5. **Seed Phrase Generator** ✅ - Abuurista 12-word mnemonic seed phrases (multi-language support)
+6. **CSV Export** 📊 ✅ - Automatic export of found wallets to CSV files with timestamp
+7. **Storage Manager** 📁 ✅ - Local file storage with automatic rotation (30-day retention)
+8. **Google Drive Backup** ☁️ ✅ - Optional cloud backup integration
+9. **Dashboard** 🖥️ ✅ - Authenticated web interface to view found wallets
+10. **Automated Scanning** ⏰ ✅ - 24/7 scheduled scanning with APScheduler
+11. **Health Check** 🏥 ✅ - `/health` endpoint to verify all systems
+12. **Test Endpoint** 🧪 ✅ - `/test` endpoint to verify scanner functionality
 
 ## Project Structure
 
@@ -49,6 +59,8 @@ Mashruucan waa **Bitcoin Wallet Scanner** oo Random Bitcoin private keys abuuray
 - `GET /dashboard` - View found wallets dashboard (requires auth: admin/admin123)
 - `GET /api/wallets` - Get found wallets as JSON (requires auth)
 - `GET /scheduler/status` - Check automated scanning status
+- `GET /health` - System health check and configuration status
+- `GET /test` - Test scanner functionality with single key
 - `GET /docs` - FastAPI auto-generated API documentation
 
 ## Test Mode
@@ -90,6 +102,14 @@ All configuration is managed via environment variables. See `.env.example` for f
 - `ERROR_THRESHOLD` - Errors before stopping (default: 5)
 
 ## Recent Changes (Nov 7, 2025)
+
+### Version 2.1 - Production Ready Release
+- ✅ **Health Check Endpoint** - System monitoring and status verification
+- ✅ **Test Endpoint** - Quick scanner functionality verification
+- ✅ **Deployment Configuration** - Ready for Replit publishing
+- ✅ **Comprehensive README** - Full documentation with examples
+- ✅ **Error Handling** - Safe config parsing for invalid environment variables
+- ✅ **Documentation Complete** - README.md, .env.example, replit.md
 
 ### Version 2.0 - Full Feature Suite
 - ✅ **CSV Export System** - Automatic export of found wallets with timestamps

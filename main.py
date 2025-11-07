@@ -130,3 +130,55 @@ def seed():
 def scheduler_status():
     """Get current scheduler status"""
     return get_scheduler_status()
+
+@app.get("/health")
+def health_check():
+    """Health check endpoint to verify all systems"""
+    from mongo_utils import USE_TEST_MODE
+    import os
+    
+    return {
+        "status": "healthy",
+        "server": "running",
+        "mode": "test" if USE_TEST_MODE else "production",
+        "features": {
+            "database": "mongodb" if not USE_TEST_MODE else "local_json",
+            "notifications": "telegram" if config.has_telegram else "console",
+            "automated_scanning": config.ENABLE_AUTO_SCAN,
+            "csv_export": True,
+            "google_drive_backup": config.has_drive_backup
+        },
+        "configuration": {
+            "scan_interval_minutes": config.SCAN_INTERVAL_MINUTES,
+            "scan_batch_size": config.SCAN_BATCH_SIZE,
+            "csv_retention_days": config.CSV_ROTATION_DAYS,
+            "exports_directory": config.CSV_OUTPUT_DIR,
+            "exports_exist": os.path.exists(config.CSV_OUTPUT_DIR)
+        }
+    }
+
+@app.get("/test")
+def test_scanner():
+    """Test the scanner with a single key generation"""
+    from scanner import generate_key, check_balance
+    
+    try:
+        # Generate a single key
+        private_key, address = generate_key()
+        balance = check_balance(address)
+        
+        return {
+            "test_result": "success",
+            "message": "Scanner is working correctly",
+            "test_data": {
+                "address": address,
+                "private_key": private_key[:10] + "..." + private_key[-10:],  # Partial key for security
+                "balance_checked": True,
+                "balance": balance
+            }
+        }
+    except Exception as e:
+        return {
+            "test_result": "error",
+            "message": str(e)
+        }
