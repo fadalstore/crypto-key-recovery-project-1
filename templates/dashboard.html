@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bitcoin Scanner Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { color: #333; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid #eee; padding-bottom: 20px; }
+        .stats { display: flex; gap: 20px; }
+        .stat-box { background: #f8f9fa; padding: 15px 25px; border-radius: 8px; text-align: center; }
+        .stat-box .number { font-size: 28px; font-weight: bold; color: #4CAF50; }
+        .stat-box .label { font-size: 12px; color: #666; text-transform: uppercase; margin-top: 5px; }
+        .search-box { margin-bottom: 20px; }
+        .search-box input { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 6px; font-size: 14px; }
+        .search-box input:focus { outline: none; border-color: #4CAF50; }
+        .warning { background: #fff3cd; color: #856404; padding: 15px; border-radius: 6px; margin-bottom: 20px; border-left: 4px solid #ffc107; }
+        .success { background: #d4edda; color: #155724; padding: 15px; border-radius: 6px; margin-bottom: 20px; border-left: 4px solid #28a745; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        th { background: #4CAF50; color: white; padding: 15px; text-align: left; font-weight: 600; }
+        td { padding: 12px 15px; border-bottom: 1px solid #ddd; }
+        tr:hover { background: #f8f9fa; }
+        .address { font-family: 'Courier New', monospace; font-size: 13px; color: #333; }
+        .balance { color: #28a745; font-weight: bold; }
+        .pagination { display: flex; justify-content: center; gap: 10px; margin-top: 20px; }
+        .pagination a { padding: 8px 15px; background: #4CAF50; color: white; text-decoration: none; border-radius: 4px; }
+        .pagination a:hover { background: #45a049; }
+        .pagination .current { background: #333; }
+        .pagination .disabled { background: #ccc; pointer-events: none; }
+        .no-results { text-align: center; padding: 40px; color: #999; }
+        .user-info { color: #666; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1>🔍 Bitcoin Scanner Dashboard</h1>
+                <p class="user-info">Logged in as: <strong>{{ username }}</strong></p>
+            </div>
+            <div class="stats">
+                <div class="stat-box">
+                    <div class="number">{{ total }}</div>
+                    <div class="label">Total Wallets Found</div>
+                </div>
+            </div>
+        </div>
+
+        {% if test_mode %}
+        <div class="warning">
+            <strong>⚠️ TEST MODE ACTIVE</strong><br>
+            Using local CSV file storage. Results are saved in the <code>exports/</code> directory.
+        </div>
+        {% else %}
+        <div class="success">
+            <strong>✅ PRODUCTION MODE</strong><br>
+            Connected to MongoDB and Telegram alerts.
+        </div>
+        {% endif %}
+
+        <div class="search-box">
+            <form method="get" action="/dashboard">
+                <input type="text" name="search" placeholder="🔎 Search by address..." value="{{ search }}">
+            </form>
+        </div>
+
+        {% if results %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>Address</th>
+                    <th>Private Key</th>
+                    <th>Balance</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for wallet in results %}
+                <tr>
+                    <td>{{ wallet.timestamp }}</td>
+                    <td class="address">{{ wallet.address }}</td>
+                    <td class="address">{{ wallet.private_key }}</td>
+                    <td class="balance">{{ wallet.balance }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="pagination">
+            {% if page > 1 %}
+            <a href="?page={{ page - 1 }}&search={{ search }}">← Previous</a>
+            {% else %}
+            <a class="disabled">← Previous</a>
+            {% endif %}
+            
+            <a class="current">Page {{ page }} of {{ total_pages }}</a>
+            
+            {% if page < total_pages %}
+            <a href="?page={{ page + 1 }}&search={{ search }}">Next →</a>
+            {% else %}
+            <a class="disabled">Next →</a>
+            {% endif %}
+        </div>
+        {% else %}
+        <div class="no-results">
+            <h2>No wallets found yet</h2>
+            <p>Start scanning to find wallets with balance!</p>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

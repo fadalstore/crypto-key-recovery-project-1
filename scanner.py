@@ -2,6 +2,7 @@ from bitcoinlib.keys import HDKey
 from bitcoinlib.services.services import Service
 from mongo_utils import save_to_mongo
 from telegram_bot import send_alert
+from storage.storage_manager import storage_manager
 
 svc = Service()
 
@@ -29,4 +30,11 @@ def scan_keys(batch_size=50):
                 "private_key": priv,
                 "balance": balance
             })
+    
+    # Export results to CSV if any wallets found
+    if results:
+        csv_path = storage_manager.persist_results(results)
+        if csv_path:
+            print(f"📊 Results exported to: {csv_path}")
+    
     return results

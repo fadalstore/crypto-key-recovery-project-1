@@ -4,3 +4,14 @@ bitcoinlib
 pymongo
 mnemonic
 requests
+pydantic
+apscheduler
+jinja2
+python-multipart
+
+# Optional: Google Drive backup
+# Uncomment if you want to enable Google Drive integration
+# google-api-python-client
+# google-auth
+# google-auth-oauthlib
+# google-auth-httplib2

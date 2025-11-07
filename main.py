@@ -1,9 +1,29 @@
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
+from contextlib import asynccontextmanager
 from scanner import scan_keys
 from seed_generator import generate_seed_phrase
+from dashboard import router as dashboard_router
+from scheduler import start_scheduler, stop_scheduler, get_scheduler_status
+from config import config
 
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Handle startup and shutdown events"""
+    # Startup
+    print("🚀 Starting Bitcoin Scanner API...")
+    start_scheduler()
+    yield
+    # Shutdown
+    print("🛑 Shutting down...")
+    stop_scheduler()
+
+
+app = FastAPI(lifespan=lifespan)
+
+# Include dashboard router
+app.include_router(dashboard_router)
 
 @app.get("/", response_class=HTMLResponse)
 def home():
@@ -48,9 +68,22 @@ def home():
         </div>
         
         <div class="endpoint">
+            <h3>GET /dashboard</h3>
+            <p>View found wallets dashboard (requires authentication)</p>
+            <button onclick="window.location.href='/dashboard'">Open Dashboard</button>
+        </div>
+        
+        <div class="endpoint">
             <h3>GET /docs</h3>
             <p>View interactive API documentation</p>
             <button onclick="window.location.href='/docs'">Open API Docs</button>
+        </div>
+        
+        <div class="endpoint">
+            <h3>GET /scheduler/status</h3>
+            <p>Check automated scanning status</p>
+            <button onclick="checkScheduler()">Check Status</button>
+            <div id="schedulerResult"></div>
         </div>
         
         <script>
@@ -70,6 +103,16 @@ def home():
                 document.getElementById('scanResult').innerHTML = 
                     `<div class="result"><strong>Scanned ${batch} keys</strong><br>Found: ${data.length} addresses with balance</div>`;
             }
+            
+            async function checkScheduler() {
+                document.getElementById('schedulerResult').innerHTML = 'Loading...';
+                const response = await fetch('/scheduler/status');
+                const data = await response.json();
+                let status = data.running ? '✅ Running' : '⏸️ Stopped';
+                let nextRun = data.jobs.length > 0 && data.jobs[0].next_run ? data.jobs[0].next_run : 'N/A';
+                document.getElementById('schedulerResult').innerHTML = 
+                    `<div class="result"><strong>Status:</strong> ${status}<br><strong>Interval:</strong> ${data.interval_minutes} minutes<br><strong>Next Run:</strong> ${nextRun}</div>`;
+            }
         </script>
     </body>
     </html>
@@ -82,3 +125,8 @@ def scan(batch: int = 100):
 @app.get("/seed")
 def seed():
     return {"phrase": generate_seed_phrase()}
+
+@app.get("/scheduler/status")
+def scheduler_status():
+    """Get current scheduler status"""
+    return get_scheduler_status()
