@@ -1,5 +1,9 @@
 from mnemonic import Mnemonic
 
+def generate_seed(language="english"):
+    mnemo = Mnemonic(language)
+    words = mnemo.generate(strength=128)
+    return words
+
 def generate_seed_phrase():
-    mnemo = Mnemonic("english")
-    return mnemo.generate(strength=128)
+    return generate_seed()
