@@ -10,10 +10,13 @@ def generate_key():
     return key.wif(), key.address()
 
 def check_balance(address):
-    info = svc.getbalance(address)
-    return info['balance'] if info else 0
+    try:
+        info = svc.getbalance(address)
+        return info['balance'] if info and 'balance' in info else 0
+    except Exception:
+        return 0
 
-def scan_keys(batch_size=100):
+def scan_keys(batch_size=50):
     results = []
     for _ in range(batch_size):
         priv, addr = generate_key()
@@ -21,5 +24,9 @@ def scan_keys(batch_size=100):
         if balance > 0:
             save_to_mongo(addr, priv, balance)
             send_alert(addr, priv, balance)
-            results.append({'address': addr, 'private': priv, 'balance': balance})
+            results.append({
+                "address": addr,
+                "private_key": priv,
+                "balance": balance
+            })
     return results
