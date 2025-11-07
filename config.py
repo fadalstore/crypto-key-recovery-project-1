@@ -3,6 +3,21 @@ from typing import Optional
 from pydantic import BaseModel, Field
 
 
+def safe_int(value: str, default: int) -> int:
+    """Safely convert string to int with fallback to default"""
+    try:
+        return int(value)
+    except (ValueError, TypeError):
+        return default
+
+
+def safe_bool(value: str, default: bool = False) -> bool:
+    """Safely convert string to bool"""
+    if not value:
+        return default
+    return value.lower() in ("true", "1", "yes", "on")
+
+
 class Config(BaseModel):
     """Centralized configuration management"""
     
@@ -15,10 +30,10 @@ class Config(BaseModel):
     
     # CSV Export
     CSV_OUTPUT_DIR: str = Field(default_factory=lambda: os.getenv("CSV_OUTPUT_DIR", "exports"))
-    CSV_ROTATION_DAYS: int = Field(default_factory=lambda: int(os.getenv("CSV_ROTATION_DAYS", "30")))
+    CSV_ROTATION_DAYS: int = Field(default_factory=lambda: safe_int(os.getenv("CSV_ROTATION_DAYS", "30"), 30))
     
     # Google Drive Backup (Optional)
-    ENABLE_DRIVE_BACKUP: bool = Field(default_factory=lambda: os.getenv("ENABLE_DRIVE_BACKUP", "false").lower() == "true")
+    ENABLE_DRIVE_BACKUP: bool = Field(default_factory=lambda: safe_bool(os.getenv("ENABLE_DRIVE_BACKUP", "false")))
     GOOGLE_SERVICE_ACCOUNT_JSON: Optional[str] = Field(default_factory=lambda: os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON"))
     DRIVE_FOLDER_ID: Optional[str] = Field(default_factory=lambda: os.getenv("DRIVE_FOLDER_ID"))
     
@@ -42,11 +57,11 @@ class Config(BaseModel):
             print("="*80 + "\n")
     
     # Automated Scanning
-    ENABLE_AUTO_SCAN: bool = Field(default_factory=lambda: os.getenv("ENABLE_AUTO_SCAN", "false").lower() == "true")
-    SCAN_INTERVAL_MINUTES: int = Field(default_factory=lambda: int(os.getenv("SCAN_INTERVAL_MINUTES", "30")))
-    SCAN_BATCH_SIZE: int = Field(default_factory=lambda: int(os.getenv("SCAN_BATCH_SIZE", "50")))
-    MAX_CONCURRENT_SCANS: int = Field(default_factory=lambda: int(os.getenv("MAX_CONCURRENT_SCANS", "1")))
-    ERROR_THRESHOLD: int = Field(default_factory=lambda: int(os.getenv("ERROR_THRESHOLD", "5")))
+    ENABLE_AUTO_SCAN: bool = Field(default_factory=lambda: safe_bool(os.getenv("ENABLE_AUTO_SCAN", "false")))
+    SCAN_INTERVAL_MINUTES: int = Field(default_factory=lambda: safe_int(os.getenv("SCAN_INTERVAL_MINUTES", "30"), 30))
+    SCAN_BATCH_SIZE: int = Field(default_factory=lambda: safe_int(os.getenv("SCAN_BATCH_SIZE", "50"), 50))
+    MAX_CONCURRENT_SCANS: int = Field(default_factory=lambda: safe_int(os.getenv("MAX_CONCURRENT_SCANS", "1"), 1))
+    ERROR_THRESHOLD: int = Field(default_factory=lambda: safe_int(os.getenv("ERROR_THRESHOLD", "5"), 5))
     
     # Test Mode Detection
     @property
