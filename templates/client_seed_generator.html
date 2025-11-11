@@ -98,7 +98,6 @@
         .disclaimer h3 { color: #721c24; margin-bottom: 10px; }
         .disclaimer p { color: #721c24; line-height: 1.6; }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/bip39@3.1.0/dist/bip39.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -144,31 +143,6 @@
         </div>
     </div>
     
-    <script>
-        let currentSeed = '';
-        
-        function generateSeed() {
-            try {
-                // Generate 128 bits of entropy (12 words)
-                const entropy = window.crypto.getRandomValues(new Uint8Array(16));
-                
-                // Convert to hex string
-                const hexEntropy = Array.from(entropy)
-                    .map(b => b.toString(16).padStart(2, '0'))
-                    .join('');
-                
-                // Generate mnemonic using BIP39
-                currentSeed = bip39.entropyToMnemonic(hexEntropy);
-                
-                // Display the seed
-                document.getElementById('seedWords').textContent = currentSeed;
-                document.getElementById('seedOutput').classList.add('active');
-                
-                console.log('✅ Seed generated client-side - NEVER sent to server');
-            } catch (error) {
-                alert('Error generating seed: ' + error.message);
-            }
-        }
         
         function copySeed() {
             if (!currentSeed) return;
