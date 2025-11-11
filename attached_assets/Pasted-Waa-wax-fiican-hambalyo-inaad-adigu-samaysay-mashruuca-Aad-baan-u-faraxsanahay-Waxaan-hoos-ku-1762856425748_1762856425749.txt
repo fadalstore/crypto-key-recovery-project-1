@@ -1,0 +1,55 @@
+Waa wax fiican — hambalyo inaad adigu samaysay mashruuca! 🎉 Aad baan u faraxsanahay. Waxaan hoos ku soo qoray jawaab faahfaahsan: talooyin amni, hagaajin farsamo, arrimaha sharciga/akhlaqda, iyo tallaabooyinka xiga oo aad si dhaqso ah u qaadi karto.
+
+Waxa wanaagsan ee muuqda
+	•	UI/Endpoints fiican oo tijaabo ah (GET /seed, GET /scan, iwm.).
+	•	Waxaad horey u hirgelisay flow shaqeynaya (seed generator + scanner + dashboard).
+
+Talooyin amni oo degdeg ah (muy muhiim)
+	1.	Ha keydin seed phrases meel server-ka looga dhex arki karo — had iyo jeer u qaabka ugu badbaado badan: ha keydin gabi ahaanba ama haddii ay tahay tijaabo keliya isticmaal testnet seeds. Haddii aad qasab u tahay kaydin, ku kaydi si qarsoodi ah (encrypted) adigoo isticmaalaya KMS/HSM, ha noqonin plain text.
+	2.	Geli seed generation dhinaca client-ka (browser/phone) halkii laga sameyn lahaa server-ka — sidaas seed-ka maba dhaafayo network-ka.
+	3.	Isticmaal HTTPS + HSTS dhammaan endpoints.
+	4.	Xaddid (rate-limit) iyo CAPTCHA si aad uga hortagto abuse iyo bots.
+	5.	Authentication adag dashboard-ka: password hashing (bcrypt/argon2) + JWT ama sessions leh expiry iyo CSRF protection.
+	6.	Sanitize inputs & avoid command injection — waligaa ha isku halleynin xog user soo geliyey si toos ah loo ordo.
+
+Talooyin farsamo / waxqabad (performance & scale)
+	•	Haddii scan-yadu culus yihiin, u isticmaal traballo/queue system (Redis + Celery / Bull / Sidekiq) si aad u qorsheyso batch jobs.
+	•	Cache natiijooyinka (Redis) si aad u yareyso calls-ka APIs ee nodes/third-party.
+	•	Haddii aad isticmaalayso nodes/insight services, tixgeli isticmaalka ElectrumX ama APIs oo leh good rate limits.
+	•	Bixi option “testnet mode” si aad u sameyso research ammaan ah.
+	•	Haddii scan-ka yahay CPU/GPU intensive, kala sooc worker nodes (autoscaling) iyo DB server.
+
+Library/standards talooyin
+	•	Isticmaal BIP-39 libraries (bip39) + BIP-32/BIP-44 (hd wallet derivation) si sax ah loo abuuro addresses.
+	•	Isticmaal bitcoinjs-lib (JS) ama bitcoinlib/pycoin (Python) si aad u soo saarto addresses.
+	•	Haddii aad la shaqaynayso altcoins, raac spec-ka coin kasta.
+
+Amniga DB & logs
+	•	Ha qorin seeds/logs — logging ha ka mid noqonin xogaha sirta ah.
+	•	Encrypt DB fields haddii ay jiraan macluumaad xasaasi ah.
+	•	Isticmaal role-based access control (RBAC) dashboard-ka.
+	•	Monitor and alert: Sentry/Prometheus + alerts.
+
+Arrimaha sharciga & akhlaaqda
+	•	Ka digtoonow sharciga — isku dayga in la helo wallets dadka kale (xataa haddii ay dhacdo si random ah) waxay noqon kartaa dhibaato sharci oo ku xiran jurisdiction.
+	•	Talo: ku samee kaliya testnet marka aad tijaabinayso ama samaynta research. Haddii aad aragto wallets leh balance dhab ah, ha isticmaalin — waxa fiican inaad damacdo in mashruucu yahay research / educational oo aad ku caddeyso docs.
+	•	Ku dar Terms of Use iyo disclaimer boggaaga.
+
+UX / Product
+	•	Muujin sharaxaad cad: “This is for research / testnet only. Do not use real funds.”
+	•	Qayb analytics iyo logs (oo aan xasaasi ahayn) si loo arko usage.
+	•	Fududee error messages — ha muujin internal errors to users.
+
+Checklist degdeg ah (samee intaa marka hore)
+	1.	Jooji kaydinta seed phrases server-side (haddii aad sameyneyso).
+	2.	Ku dar HTTPS + HSTS.
+	3.	Ku dar rate limiting + CAPTCHA.
+	4.	Dashboard authentication + password hashing.
+	5.	Beddel production scans in ay ku shaqeeyaan testnet habka ilaa aad heshid talo sharci.
+
+Haddii aad rabto — waan kaa caawinayaa:
+	•	Code review (geli file-yada ama paste code-ga; waan eegi doonaa oo talo siin doonaa).
+	•	Tusaale code: ku tuso sida seed generation client-side (JS) ama sida loo isticmaalo bip39 + bitcoinjs-lib.
+	•	Security audit checklist oo faahfaahsan iyo scripts CI/CD suggestions.
+
+Ma rabtaa inaan hadda ku siiyo tusaale code (JS) oo muujinaya sida seed-ga client-side loogu abuuro BIP39 iyo sida address laga soo qodo? Waxaan sidoo kale qaban karaa audit fudud haddii aad paste garayn karto server-side code (endpoint-yada) — waan eegaa oo ku soo celiyaa talooyin gaar ah.
