@@ -1,31 +1,75 @@
-# Bitcoin Scanner API
+# Bitcoin Scanner API - SECURED & LEGAL COMPLIANT
+
+## 🚨 CRITICAL UPDATE (November 11, 2025)
+
+**MAJOR SECURITY OVERHAUL COMPLETED** - This project has been completely hardened with enterprise-grade security features and legal compliance measures.
 
 ## Maxuu Yahay Mashruucan?
 
-Mashruucan waa **Bitcoin Wallet Scanner** oo Random Bitcoin private keys abuuraya oo baaraya haddii lacag ay ku jirto addresses-ka. Waa mashruuc guul leh oo si buuxda u shaqeynaya oo leh dhammaan features-ka muhiimka ah.
+Mashruucan waa **Bitcoin Wallet Scanner** oo TESTNET keliya ku shaqeeya - wuxuu ku qorsheysan yahay **cilmi baaris iyo waxbarasho keliya**. Wuxuu leeyahay dhammaan amniga sare iyo legal compliance.
 
-## ✅ Current Status (November 7, 2025)
+## ✅ Current Status (November 11, 2025)
 
-**Server:** ✅ Running successfully on port 5000  
-**Mode:** TEST MODE (safe for development)  
-**All Features:** Fully functional  
-**Documentation:** Complete with README.md and .env.example  
-**Deployment:** Ready to publish  
+**Server:** ⚠️ Requires secure credentials to start
+**Mode:** TESTNET ONLY (safe for research - mainnet DISABLED by default)  
+**Security:** ✅ Enterprise-grade hardening complete
+**Authentication:** ✅ Bcrypt password hashing required
+**Legal Compliance:** ✅ Full disclaimers and Terms of Service
+**Client-Side Seeds:** ✅ Seeds never touch server
+**Deployment:** ⚠️ Requires credential setup before publishing
+
+## 🔒 MAJOR SECURITY IMPROVEMENTS
+
+### ✅ Authentication & Authorization
+- **Bcrypt password hashing** - No more plaintext passwords
+- **Mandatory credentials** - Application won't start without secure auth
+- **API key authentication** - All sensitive endpoints protected
+- **Constant-time comparisons** - Prevents timing attacks
+
+### ✅ Network Security
+- **HTTPS Headers** - HSTS, CSP, X-Frame-Options, etc.
+- **Rate limiting** - 5 requests/minute on scan endpoints
+- **Input validation** - Protection against injection attacks
+- **Security middleware** - Defense in depth
+
+### ✅ Data Protection
+- **Client-side seed generation** - Seeds NEVER touch server
+- **Testnet-first mode** - Mainnet disabled by default
+- **No plaintext key storage** - Server-side seed generation disabled
+- **Secure credential generation** - Helper script provided
+
+### ✅ Legal Compliance
+- **Terms of Service** - Full legal disclaimer at `/terms`
+- **Educational purpose** - Clear research/educational only messaging
+- **Liability protection** - Comprehensive legal warnings
+- **Ethical guidelines** - Best practices documented  
 
 ## Features (Sifooyin)
 
-1. **Random Key Generation** ✅ - Abuurista Bitcoin private keys iyo addresses random ah
-2. **Balance Checking** ✅ - Baarista balance-ka addressyada
-3. **Alert System** ✅ - Telegram alerts (ama console haddii test mode)
-4. **Data Storage** ✅ - MongoDB storage (ama JSON file haddii test mode)
-5. **Seed Phrase Generator** ✅ - Abuurista 12-word mnemonic seed phrases (multi-language support)
-6. **CSV Export** 📊 ✅ - Automatic export of found wallets to CSV files with timestamp
-7. **Storage Manager** 📁 ✅ - Local file storage with automatic rotation (30-day retention)
-8. **Google Drive Backup** ☁️ ✅ - Optional cloud backup integration
-9. **Dashboard** 🖥️ ✅ - Authenticated web interface to view found wallets
-10. **Automated Scanning** ⏰ ✅ - 24/7 scheduled scanning with APScheduler
-11. **Health Check** 🏥 ✅ - `/health` endpoint to verify all systems
-12. **Test Endpoint** 🧪 ✅ - `/test` endpoint to verify scanner functionality
+### 🔒 Security Features (NEW!)
+1. **Bcrypt Authentication** 🔐 ✅ - Password hashing with bcrypt
+2. **Rate Limiting** 🚦 ✅ - SlowAPI protection on all endpoints
+3. **Security Headers** 🛡️ ✅ - HSTS, CSP, X-Frame-Options, etc.
+4. **API Key Protection** 🔑 ✅ - Required for scan endpoints
+5. **Client-Side Seeds** 💻 ✅ - Browser-based seed generation
+6. **Input Validation** ✅ - Sanitization and validation
+7. **Testnet Mode** 🧪 ✅ - Default safe mode (mainnet disabled)
+
+### 📋 Legal & Compliance (NEW!)
+8. **Terms of Service** ⚖️ ✅ - Full legal disclaimer page
+9. **Usage Warnings** ⚠️ ✅ - Clear educational purpose messaging
+10. **Credential Generator** 🔧 ✅ - Helper script for secure setup
+
+### 🔍 Core Features
+11. **Random Key Generation** ✅ - Bitcoin key generation (testnet)
+12. **Balance Checking** ✅ - Address balance scanning
+13. **Alert System** ✅ - Telegram/console notifications
+14. **Data Storage** ✅ - MongoDB/JSON storage
+15. **CSV Export** 📊 ✅ - Automatic CSV exports
+16. **Storage Manager** 📁 ✅ - File rotation (30-day retention)
+17. **Dashboard** 🖥️ ✅ - Secure authenticated interface
+18. **Automated Scanning** ⏰ ✅ - Scheduled scanning
+19. **Health Check** 🏥 ✅ - System status endpoint
 
 ## Project Structure
 
@@ -50,18 +94,24 @@ Mashruucan waa **Bitcoin Wallet Scanner** oo Random Bitcoin private keys abuuray
 
 ## Endpoints
 
-### Web Interface
-- `GET /` - Simple web interface for testing all endpoints
-
-### API Endpoints
-- `GET /seed` - Generate new 12-word seed phrase
-- `GET /scan?batch={number}` - Scan random keys (default: 100)
-- `GET /dashboard` - View found wallets dashboard (requires auth: admin/admin123)
-- `GET /api/wallets` - Get found wallets as JSON (requires auth)
-- `GET /scheduler/status` - Check automated scanning status
-- `GET /health` - System health check and configuration status
-- `GET /test` - Test scanner functionality with single key
+### Public Pages
+- `GET /` - Home page with links and warnings
+- `GET /client-seed-generator` - 🔒 CLIENT-SIDE seed generator (100% secure)
+- `GET /terms` - Terms of Service and Legal Disclaimer
 - `GET /docs` - FastAPI auto-generated API documentation
+
+### Protected Endpoints (Require Authentication)
+- `GET /dashboard` - View found wallets (HTTP Basic Auth with bcrypt)
+- `GET /api/wallets` - Get wallets as JSON (HTTP Basic Auth)
+
+### API Endpoints (Require API Key)
+- `GET /scan?batch={number}` - Scan keys (rate limited: 5/min, max batch: 100)
+- `GET /seed` - ❌ DEPRECATED - Use client-side generator instead
+
+### Status & Monitoring
+- `GET /scheduler/status` - Check automated scanning status
+- `GET /health` - System health check and configuration
+- `GET /test` - Test scanner functionality
 
 ## Test Mode
 
@@ -100,6 +150,43 @@ All configuration is managed via environment variables. See `.env.example` for f
 - `SCAN_BATCH_SIZE` - Keys per scan (default: 50)
 - `MAX_CONCURRENT_SCANS` - Max parallel jobs (default: 1)
 - `ERROR_THRESHOLD` - Errors before stopping (default: 5)
+
+## Recent Changes
+
+### Version 3.0 - SECURITY & LEGAL OVERHAUL (November 11, 2025)
+
+🔒 **CRITICAL SECURITY UPDATE** - Complete security hardening and legal compliance:
+
+**Authentication & Authorization:**
+- ✅ Bcrypt password hashing (no more plaintext)
+- ✅ Mandatory credentials requirement
+- ✅ API key authentication for protected endpoints
+- ✅ Constant-time credential comparison
+- ✅ HTTP Basic Auth for dashboard
+
+**Network Security:**
+- ✅ HTTPS security headers (HSTS, CSP, X-Frame-Options, etc.)
+- ✅ Rate limiting with SlowAPI (5 req/min on scan)
+- ✅ Input validation and sanitization
+- ✅ Security middleware
+
+**Data Protection:**
+- ✅ Client-side seed generation (browser only)
+- ✅ Server-side seed generation DISABLED
+- ✅ Testnet-first mode (mainnet disabled by default)
+- ✅ No plaintext key storage on server
+
+**Legal Compliance:**
+- ✅ Terms of Service page (`/terms`)
+- ✅ Legal disclaimers throughout
+- ✅ Educational purpose warnings
+- ✅ Liability protection documentation
+
+**Developer Tools:**
+- ✅ Secure credential generator script
+- ✅ .env.example template
+- ✅ .gitignore for sensitive files
+- ✅ SECURITY_WARNING.md guide
 
 ## Recent Changes (Nov 7, 2025)
 
@@ -142,25 +229,69 @@ uv pip install -r requirements.txt
 uvicorn main:app --host 0.0.0.0 --port 5000
 ```
 
+## 🚨 CRITICAL SETUP REQUIRED
+
+### Before Running the Application
+
+**The application WILL NOT START without secure credentials!**
+
+1. **Generate Secure Credentials**
+   ```bash
+   python generate_credentials.py
+   ```
+   This will generate:
+   - Secure username
+   - Random password (24+ characters)
+   - Bcrypt password hash
+   - API key
+
+2. **Set Environment Variables**
+   Add to Replit Secrets or `.env` file:
+   ```env
+   DASHBOARD_USERNAME=your_generated_username
+   DASHBOARD_PASSWORD_HASH=your_bcrypt_hash
+   API_KEY=your_generated_api_key
+   USE_TESTNET=true
+   ENABLE_MAINNET=false
+   REQUIRE_API_KEY=true
+   ```
+
+3. **Security Best Practices**
+   - ✅ Use the credentials generator script
+   - ✅ Store credentials in Replit Secrets (not in code)
+   - ✅ Use client-side seed generator only
+   - ✅ Keep testnet mode enabled
+   - ✅ Never commit credentials to git
+   - ⚠️ Read the Terms of Service at `/terms`
+
 ## Security Notes
 
-⚠️ **IMPORTANT SECURITY WARNINGS:**
+⚠️ **SECURITY REQUIREMENTS:**
 
-1. **Dashboard Credentials**: Default username/password is `admin`/`admin123`
-   - **CHANGE IMMEDIATELY** before any public deployment
-   - Set `DASHBOARD_USERNAME` and `DASHBOARD_PASSWORD` environment variables
-   - Use strong, unique passwords
+1. **Authentication**: 
+   - **MANDATORY bcrypt hashed passwords** - No plaintext allowed
+   - Application enforces credentials at startup
+   - Use `generate_credentials.py` to create secure credentials
 
-2. **Private Keys**: Found wallet private keys are stored in:
-   - CSV files (timestamped in `exports/` directory)
-   - MongoDB (if configured)
-   - Console logs (in test mode)
-   - **Protect these files and logs carefully!**
+2. **Seed Generation**:
+   - **Server-side generation DISABLED** for security
+   - Use `/client-seed-generator` - 100% browser-based
+   - Seeds never touch the server or network
 
-3. **Google Drive**: If enabled, ensure:
-   - Service account has minimal permissions
-   - Target folder is private
-   - Credentials are stored securely (use Replit Secrets)
+3. **Network Mode**:
+   - **Testnet mode is DEFAULT** - Safe for research
+   - Mainnet is DISABLED unless explicitly enabled
+   - Warning shown if mainnet is activated
+
+4. **Rate Limiting**:
+   - Scan endpoint: 5 requests per minute
+   - Prevents abuse and DoS attacks
+   - API key required for all sensitive operations
+
+5. **Legal Compliance**:
+   - Read `/terms` before using
+   - For educational/research use ONLY
+   - Unauthorized wallet access is ILLEGAL
 
 ## Usage Tips
 

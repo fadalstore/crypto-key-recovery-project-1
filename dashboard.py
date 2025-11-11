@@ -8,7 +8,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.templating import Jinja2Templates
 from typing import List, Dict, Any
-from config import config
+from config import config, verify_password
 from storage.storage_manager import storage_manager
 from mongo_utils import USE_TEST_MODE
 
@@ -17,26 +17,25 @@ router = APIRouter()
 security = HTTPBasic()
 templates = Jinja2Templates(directory="templates")
 
-# Security check on module load
-if config.DASHBOARD_USERNAME == "admin" and config.DASHBOARD_PASSWORD == "admin123":
-    import warnings
-    warnings.warn(
-        "Dashboard is using DEFAULT CREDENTIALS (admin/admin123). "
-        "This is a SECURITY RISK! Set DASHBOARD_USERNAME and DASHBOARD_PASSWORD "
-        "environment variables immediately.",
-        UserWarning,
-        stacklevel=2
-    )
-
 
 def verify_credentials(credentials: HTTPBasicCredentials = Depends(security)):
-    """Verify dashboard authentication"""
+    """Verify dashboard authentication using bcrypt password hashing"""
+    
+    if not config.DASHBOARD_USERNAME or not config.DASHBOARD_PASSWORD_HASH:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Authentication not configured. Set DASHBOARD_USERNAME and DASHBOARD_PASSWORD_HASH environment variables.",
+        )
+    
+    # Verify username with constant-time comparison
     correct_username = secrets.compare_digest(
         credentials.username, config.DASHBOARD_USERNAME
     )
-    correct_password = secrets.compare_digest(
-        credentials.password, config.DASHBOARD_PASSWORD
-    )
+    
+    # Verify password against bcrypt hash
+    correct_password = False
+    if correct_username:
+        correct_password = verify_password(credentials.password, config.DASHBOARD_PASSWORD_HASH)
     
     if not (correct_username and correct_password):
         raise HTTPException(

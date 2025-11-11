@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client-Side Seed Generator - SECURE</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            max-width: 800px;
+            width: 100%;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+        }
+        .warning-box {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+        }
+        .warning-box h3 { color: #856404; margin-bottom: 10px; }
+        .warning-box ul { margin-left: 20px; color: #856404; line-height: 1.8; }
+        h1 { color: #333; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+        .subtitle { color: #666; margin-bottom: 30px; font-size: 14px; }
+        .security-badge {
+            display: inline-block;
+            background: #28a745;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        button:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        button:disabled { opacity: 0.6; cursor: not-allowed; }
+        .seed-output {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 18px;
+            line-height: 1.8;
+            word-break: break-word;
+            min-height: 100px;
+            display: none;
+        }
+        .seed-output.active { display: block; }
+        .seed-words { color: #007bff; font-weight: bold; }
+        .copy-btn {
+            background: #28a745;
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 14px;
+        }
+        .footer-note {
+            background: #e7f3fe;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 5px;
+            font-size: 14px;
+            color: #0c5460;
+        }
+        .disclaimer {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+        .disclaimer h3 { color: #721c24; margin-bottom: 10px; }
+        .disclaimer p { color: #721c24; line-height: 1.6; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/bip39@3.1.0/dist/bip39.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="security-badge">🔒 100% CLIENT-SIDE - NO SERVER INVOLVEMENT</div>
+        
+        <h1>🔐 Secure Seed Generator</h1>
+        <p class="subtitle">Generate BIP-39 mnemonic seed phrases entirely in your browser - your seeds NEVER touch the server</p>
+        
+        <div class="warning-box">
+            <h3>⚠️ SECURITY & LEGAL WARNING</h3>
+            <ul>
+                <li><strong>FOR RESEARCH/EDUCATIONAL USE ONLY</strong></li>
+                <li>Generated seeds are created <strong>entirely in your browser</strong> using cryptographically secure random number generation</li>
+                <li><strong>NEVER share your seed phrase</strong> with anyone</li>
+                <li><strong>NEVER use this for real funds</strong> - use hardware wallets for production</li>
+                <li>This tool is for <strong>testnet research only</strong></li>
+                <li>Unauthorized wallet access attempts may be <strong>ILLEGAL</strong> in your jurisdiction</li>
+            </ul>
+        </div>
+        
+        <button onclick="generateSeed()" id="generateBtn">🎲 Generate Random Seed Phrase</button>
+        
+        <div id="seedOutput" class="seed-output">
+            <div style="color: #28a745; font-weight: bold; margin-bottom: 10px;">✅ Seed Generated Successfully (Client-Side)</div>
+            <div class="seed-words" id="seedWords"></div>
+            <button class="copy-btn" onclick="copySeed()">📋 Copy to Clipboard</button>
+        </div>
+        
+        <div class="footer-note">
+            <strong>🔒 Privacy Guaranteed:</strong> This seed phrase was generated using cryptographically secure random numbers
+            <strong>entirely in your browser</strong>. It never touched any server and exists only in your device's memory.
+            Once you navigate away from this page, it will be lost forever unless you save it.
+        </div>
+        
+        <div class="disclaimer">
+            <h3>⚖️ LEGAL DISCLAIMER</h3>
+            <p>
+                This tool is provided for <strong>educational and research purposes only</strong> on Bitcoin testnet networks.
+                Any attempt to access wallets you do not own or have authorization to access is <strong>illegal</strong> and may 
+                result in criminal prosecution. The creators of this tool are not responsible for any misuse. By using this tool, 
+                you agree that you will only use it for legitimate research on test networks with your own generated addresses.
+            </p>
+        </div>
+    </div>
+    
+    <script>
+        let currentSeed = '';
+        
+        function generateSeed() {
+            try {
+                // Generate 128 bits of entropy (12 words)
+                const entropy = window.crypto.getRandomValues(new Uint8Array(16));
+                
+                // Convert to hex string
+                const hexEntropy = Array.from(entropy)
+                    .map(b => b.toString(16).padStart(2, '0'))
+                    .join('');
+                
+                // Generate mnemonic using BIP39
+                currentSeed = bip39.entropyToMnemonic(hexEntropy);
+                
+                // Display the seed
+                document.getElementById('seedWords').textContent = currentSeed;
+                document.getElementById('seedOutput').classList.add('active');
+                
+                console.log('✅ Seed generated client-side - NEVER sent to server');
+            } catch (error) {
+                alert('Error generating seed: ' + error.message);
+            }
+        }
+        
+        function copySeed() {
+            if (!currentSeed) return;
+            
+            navigator.clipboard.writeText(currentSeed).then(() => {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = '✅ Copied!';
+                btn.style.background = '#218838';
+                
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = '#28a745';
+                }, 2000);
+            }).catch(err => {
+                alert('Failed to copy: ' + err);
+            });
+        }
+        
+        // Warn user before leaving if seed was generated
+        window.addEventListener('beforeunload', (e) => {
+            if (currentSeed) {
+                e.preventDefault();
+                e.returnValue = 'You have a generated seed phrase. Make sure you saved it before leaving!';
+            }
+        });
+    </script>
+</body>
+</html>

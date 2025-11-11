@@ -8,6 +8,10 @@ pydantic
 apscheduler
 jinja2
 python-multipart
+slowapi
+bcrypt>=4.0.0
+itsdangerous
+python-dotenv
 
 # Optional: Google Drive backup
 # Uncomment if you want to enable Google Drive integration
@@ -15,13 +19,3 @@ python-multipart
 # google-auth
 # google-auth-oauthlib
 # google-auth-httplib2
-apscheduler
-bitcoinlib
-fastapi
-jinja2
-mnemonic
-pydantic
-pymongo
-python-multipart
-requests
-uvicorn

@@ -1,6 +1,25 @@
 import os
+import secrets
+import bcrypt
 from typing import Optional
 from pydantic import BaseModel, Field
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
+
+def hash_password(password: str) -> str:
+    """Hash a password using bcrypt"""
+    return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+
+
+def verify_password(password: str, hashed: str) -> bool:
+    """Verify a password against a bcrypt hash"""
+    try:
+        return bcrypt.checkpw(password.encode('utf-8'), hashed.encode('utf-8'))
+    except Exception:
+        return False
 
 
 def safe_int(value: str, default: int) -> int:
@@ -16,6 +35,11 @@ def safe_bool(value: str, default: bool = False) -> bool:
     if not value:
         return default
     return value.lower() in ("true", "1", "yes", "on")
+
+
+def generate_secure_password() -> str:
+    """Generate a cryptographically secure random password"""
+    return secrets.token_urlsafe(32)
 
 
 class Config(BaseModel):
@@ -38,22 +62,47 @@ class Config(BaseModel):
     DRIVE_FOLDER_ID: Optional[str] = Field(default_factory=lambda: os.getenv("DRIVE_FOLDER_ID"))
     
     # Dashboard Authentication
-    DASHBOARD_USERNAME: str = Field(default_factory=lambda: os.getenv("DASHBOARD_USERNAME", "admin"))
-    DASHBOARD_PASSWORD: str = Field(default_factory=lambda: os.getenv("DASHBOARD_PASSWORD", "admin123"))
+    DASHBOARD_USERNAME: str = Field(default_factory=lambda: os.getenv("DASHBOARD_USERNAME"))
+    DASHBOARD_PASSWORD_HASH: Optional[str] = Field(default_factory=lambda: os.getenv("DASHBOARD_PASSWORD_HASH"))
+    
+    # Security
+    USE_TESTNET: bool = Field(default_factory=lambda: safe_bool(os.getenv("USE_TESTNET", "true")))
+    ENABLE_MAINNET: bool = Field(default_factory=lambda: safe_bool(os.getenv("ENABLE_MAINNET", "false")))
+    REQUIRE_API_KEY: bool = Field(default_factory=lambda: safe_bool(os.getenv("REQUIRE_API_KEY", "true")))
+    API_KEY: Optional[str] = Field(default_factory=lambda: os.getenv("API_KEY"))
     
     def __init__(self, **data):
         super().__init__(**data)
-        # Security warning for default credentials
-        if self.DASHBOARD_USERNAME == "admin" and self.DASHBOARD_PASSWORD == "admin123":
+        
+        # CRITICAL: Enforce authentication
+        if not self.DASHBOARD_USERNAME or not self.DASHBOARD_PASSWORD_HASH:
             print("\n" + "="*80)
-            print("⚠️  SECURITY WARNING: Using default dashboard credentials!")
-            print("   Username: admin | Password: admin123")
+            print("🚨 CRITICAL SECURITY ERROR: No authentication credentials set!")
             print("   ")
-            print("   SET CUSTOM CREDENTIALS IMMEDIATELY:")
-            print("   - Set DASHBOARD_USERNAME environment variable")
-            print("   - Set DASHBOARD_PASSWORD environment variable")
+            print("   The application REQUIRES secure credentials to run.")
             print("   ")
-            print("   Default credentials are NOT SECURE for production use!")
+            print("   TO GENERATE SECURE CREDENTIALS:")
+            print("   1. Run: python generate_credentials.py")
+            print("   2. Copy output to Replit Secrets or .env file")
+            print("   ")
+            print("   OR manually with Python:")
+            print("   >>> import bcrypt, secrets")
+            print("   >>> password = secrets.token_urlsafe(16)")
+            print("   >>> bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')")
+            print("   ")
+            print("   APPLICATION WILL NOT START WITHOUT CREDENTIALS!")
+            print("="*80 + "\n")
+            raise ValueError("Missing required authentication credentials: DASHBOARD_USERNAME and DASHBOARD_PASSWORD_HASH")
+        
+        # Warn if mainnet is enabled
+        if self.ENABLE_MAINNET and not self.USE_TESTNET:
+            print("\n" + "="*80)
+            print("⚠️  WARNING: MAINNET MODE ENABLED!")
+            print("   ")
+            print("   You are running in MAINNET mode. This is DANGEROUS and may")
+            print("   have LEGAL CONSEQUENCES. Use TESTNET mode for research.")
+            print("   ")
+            print("   To use testnet: Set USE_TESTNET=true")
             print("="*80 + "\n")
     
     # Automated Scanning
